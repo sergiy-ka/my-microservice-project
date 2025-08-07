@@ -1,5 +1,4 @@
 // Тестовий JavaScript файл
-// test comment
 console.log('Hello, World!');
 
 function greetUser(name) {
