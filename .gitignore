@@ -1,0 +1,26 @@
+# Terraform state files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform variable files (can contain secrets)
+*.tfvars
+*.tfvars.json
+
+# Terraform provider cache
+.terraform/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Log files
+*.log
+crash.log
