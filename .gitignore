@@ -24,3 +24,12 @@ Thumbs.db
 # Log files
 *.log
 crash.log
+
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.log
+.DS_Store

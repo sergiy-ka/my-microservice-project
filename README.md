@@ -3,5 +3,11 @@
 
 ## Уроки
 
+### [Урок 3: Linux адміністрування та автоматизація](./lesson-3/README.md)
+Вивчення основ Linux адміністрування через автоматизацію встановлення та видалення інструментів розробки (Docker, Python 3.11+, Django).
+
+### [Урок 4: Docker](./lesson-4/README.md)
+Відпрацювання роботи з Docker, Docker Compose, а також структурування Django-проєкту із базою даних PostgreSQL та вебсервером Nginx.
+
 ### [Урок 5: Infrastructure as Code (Terraform)](./lesson-5/README.md)
 Створення AWS інфраструктури за допомогою Terraform з використанням модульної архітектури.
