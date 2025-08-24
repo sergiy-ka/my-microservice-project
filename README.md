@@ -8,3 +8,6 @@
 
 ### [Урок 4: Docker](./lesson-4/README.md)
 Відпрацювання роботи з Docker, Docker Compose, а також структурування Django-проєкту із базою даних PostgreSQL та вебсервером Nginx.
+
+### [Урок 5: Infrastructure as Code (Terraform)](./lesson-5/README.md)
+Створення AWS інфраструктури за допомогою Terraform з використанням модульної архітектури.
