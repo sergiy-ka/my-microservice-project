@@ -1,0 +1,19 @@
+apiVersion: v2
+name: django-app
+description: A Helm chart for Django application deployment on Kubernetes
+version: 0.1.0
+appVersion: "1.0.0"
+type: application
+
+keywords:
+  - django
+  - python
+  - web
+  - application
+
+maintainers:
+  - name: Sergio
+    email: s.stenv@slmails.com
+
+sources:
+  - https://github.com/sergiy-ka/my-microservice-project

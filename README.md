@@ -11,3 +11,6 @@
 
 ### [Урок 5: Infrastructure as Code (Terraform)](./lesson-5/README.md)
 Створення AWS інфраструктури за допомогою Terraform з використанням модульної архітектури.
+
+### [Урок 7: Вивчення Helm](./lesson-7/README.md)
+Практичне використання Terraform, Docker, Kubernetes (EKS) та Helm.
