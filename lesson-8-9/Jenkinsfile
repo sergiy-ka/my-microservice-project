@@ -63,6 +63,7 @@ spec:
                         # Update the image tag in values.yaml
                         sed -i "s/tag: .*/tag: $IMAGE_TAG/" values.yaml
 
+                        cd ../../..
                         git config user.email "$COMMIT_EMAIL"
                         git config user.name "$COMMIT_NAME"
                         git add values.yaml
