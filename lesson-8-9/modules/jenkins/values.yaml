@@ -74,6 +74,14 @@ controller:
                   scriptPath('jenkins-jcas-c.yaml')
                 }
               }
+              steps {
+                dsl {
+                  external('jenkins-jcas-c.yaml')
+                  ignoreMissingFiles(true)
+                  ignoreExistingProjects(false)
+                  removedJobAction('DELETE')
+                }
+              }
               triggers {
                 scm('H/5 * * * *')
               }
