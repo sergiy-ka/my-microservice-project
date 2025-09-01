@@ -5,7 +5,7 @@ pipelineJob("django-ci-cd") {
         git {
           remote {
             url("https://github.com/sergiy-ka/my-microservice-project.git")
-            credentials("github-token")
+            credentialsId("github-token")
           }
           branches("*/lesson-8-9")
         }
