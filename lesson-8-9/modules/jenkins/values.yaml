@@ -71,7 +71,7 @@ controller:
                     credentials('github-token')
                   }
                   branches('*/lesson-8-9')
-                  scriptPath('jenkins-jcas-c.yaml')
+                  scriptPath('lesson-8-9/jenkins-jcas-c.yaml')
                 }
               }
               triggers {
