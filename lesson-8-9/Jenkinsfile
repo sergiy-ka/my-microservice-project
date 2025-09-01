@@ -58,12 +58,11 @@ spec:
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
                         sh '''
                         git clone https://$GIT_USERNAME:$GIT_PAT@github.com/sergiy-ka/my-microservice-project.git
-                        cd lesson-8-9/charts/django-app
+                        cd my-microservice-project
 
                         # Update the image tag in values.yaml
-                        sed -i "s/tag: .*/tag: $IMAGE_TAG/" values.yaml
+                        sed -i "s/tag: .*/tag: $IMAGE_TAG/" lesson-8-9/charts/django-app/values.yaml
 
-                        cd ../../..
                         git config user.email "$COMMIT_EMAIL"
                         git config user.name "$COMMIT_NAME"
                         git add values.yaml
