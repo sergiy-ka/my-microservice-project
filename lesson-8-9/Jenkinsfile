@@ -60,6 +60,27 @@ spec:
                         git clone https://$GIT_USERNAME:$GIT_PAT@github.com/sergiy-ka/my-microservice-project.git
                         cd my-microservice-project
 
+                        # 🔹 Діагностика: показуємо поточну директорію
+                        echo "=== Поточна директорія ==="
+                        pwd
+
+                        # 🔹 Діагностика: показуємо вміст кореня
+                        echo "=== Вміст кореня репозиторію ==="
+                        ls -la
+
+                        # 🔹 Діагностика: шукаємо файл values.yaml
+                        echo "=== Шукаємо values.yaml ==="
+                        find . -name "values.yaml" -type f
+
+                        # 🔹 Діагностика: показуємо структуру папок lesson-8-9
+                        if [ -d "lesson-8-9" ]; then
+                          echo "=== Структура lesson-8-9/charts ==="
+                          find lesson-8-9/charts -type d
+                        else
+                          echo "❌ Папка lesson-8-9 не знайдена!"
+                          exit 1
+                        fi
+
                         # Update the image tag in values.yaml
                         sed -i "s/tag: .*/tag: $IMAGE_TAG/" lesson-8-9/charts/django-app/values.yaml
 
