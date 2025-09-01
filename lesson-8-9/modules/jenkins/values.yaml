@@ -1,4 +1,10 @@
 controller:
+  extraEnv:
+    GITHUB_TOKEN:
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-github-token
+          key: GITHUB_TOKEN
   admin:
     username: admin
     password: admin123
