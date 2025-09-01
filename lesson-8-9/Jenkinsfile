@@ -86,7 +86,7 @@ spec:
 
                         git config user.email "$COMMIT_EMAIL"
                         git config user.name "$COMMIT_NAME"
-                        git add values.yaml
+                        git add lesson-8-9/charts/django-app/values.yaml
                         git commit -m "Update image tag to $IMAGE_TAG"
                         git push origin lesson-8-9
                         '''
