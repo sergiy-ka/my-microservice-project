@@ -57,7 +57,7 @@ spec:
                 container('git') {
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
                         sh '''
-                        git clone --branch lesson-8-9 https://x-access-token:$GIT_PAT@github.com/sergiy-ka/my-microservice-project.git
+                        git clone --branch lesson-8-9 https://$GIT_USERNAME:$GIT_PAT@github.com/sergiy-ka/my-microservice-project.git
                         cd my-microservice-project
 
                         # Update the image tag in values.yaml
