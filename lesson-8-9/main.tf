@@ -87,7 +87,7 @@ variable "github_token" {
   description = "GitHub Personal Access Token"
   type        = string
   sensitive   = true
-  default     = "***REDACTED***"
+  default     = "" # Не зберігаємо у коді!
 }
 
 variable "github_repo_url" {

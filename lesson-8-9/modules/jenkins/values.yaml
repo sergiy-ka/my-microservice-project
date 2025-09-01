@@ -50,7 +50,7 @@ controller:
                   scope: GLOBAL
                   id: github-token
                   username: "sergiy-ka"
-                  password: "***REDACTED***"
+                  password: "${GITHUB_TOKEN}"
                   description: GitHub PAT
 
       seed-job: |
