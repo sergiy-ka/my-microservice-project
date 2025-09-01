@@ -41,8 +41,8 @@ spec:
                 container('kaniko') {
                     sh '''
                     /kaniko/executor \\
-                        --context `pwd` \\
-                        --dockerfile `pwd`/Dockerfile \\
+                        --context `pwd`/lesson-8-9 \\
+                        --dockerfile `pwd`/lesson-8-9/Dockerfile \\
                         --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \\
                         --cache=true \\
                         --insecure \\
