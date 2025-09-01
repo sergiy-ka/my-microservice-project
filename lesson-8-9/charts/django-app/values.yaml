@@ -1,4 +1,4 @@
-# Default values for django-app.
+# Default values for django-app
 
 replicaCount: 2
 
