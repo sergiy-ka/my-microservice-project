@@ -71,15 +71,27 @@ controller:
                     credentials('github-token')
                   }
                   branches('*/lesson-8-9')
-                  scriptPath('jenkins-jcas-c.yaml')
                 }
               }
               steps {
                 dsl {
-                  external('jenkins-jcas-c.yaml')
-                  ignoreMissingFiles(true)
-                  ignoreExistingProjects(false)
-                  removedJobAction('DELETE')
+                  text('''
+                    pipelineJob("django-ci-cd") {
+                      definition {
+                        cpsScm {
+                          scm {
+                            git {
+                              remote {
+                                url("https://github.com/sergiy-ka/my-microservice-project.git")
+                                credentials("github-token")
+                              }
+                              branches("*/lesson-8-9")
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ''')
                 }
               }
               triggers {
