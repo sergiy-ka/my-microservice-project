@@ -1,0 +1,15 @@
+pipelineJob("django-ci-cd") {
+  definition {
+    cpsScm {
+      scm {
+        git {
+          remote {
+            url("https://github.com/sergiy-ka/my-microservice-project.git")
+            credentials("github-token")
+          }
+          branches("*/lesson-8-9")
+        }
+      }
+    }
+  }
+}
