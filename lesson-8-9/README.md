@@ -1,25 +1,27 @@
-# Lesson 7: Helm та Kubernetes (EKS) розгортання
+# Lesson 8-9: Jenkins + ArgoCD CI/CD Pipeline
 
-Цей проект демонструє створення повної інфраструктури для Django застосунку з використанням Terraform, Docker, Kubernetes (EKS) та Helm.
+Цей проект демонструє створення повного CI/CD процесу для Django застосунку з використанням Jenkins, ArgoCD, Terraform, Docker, Kubernetes (EKS) та Helm.
 
 ## Архітектура проекту
 
 **Інфраструктура:**
 - **AWS EKS** — керований Kubernetes кластер
 - **AWS ECR** — реєстр Docker образів
-- **AWS VPC** — мережева інфраструктура з lesson-5
+- **AWS VPC** — мережева інфраструктура
+- **Jenkins** — CI/CD автоматизація з Kaniko
+- **ArgoCD** — GitOps continuous deployment
 - **PostgreSQL** — база даних у Kubernetes
-- **LoadBalancer** — зовнішній доступ до застосунку
+- **LoadBalancer** — зовнішній доступ до сервісів
 
-**Компоненти застосунку:**
-- **Django** — веб-застосунок (2-6 реплік з HPA)
-- **PostgreSQL** — база даних (1 репліка)
-- **ConfigMap** — конфігурація та змінні середовища
+**CI/CD Process:**
+- **Jenkins Pipeline** — збірка Docker образу, пуш в ECR, оновлення Helm chart
+- **ArgoCD Application** — автоматична синхронізація з Git репозиторієм
+- **GitOps Flow** — Code Push → Jenkins Build → ECR → Chart Update → ArgoCD Sync
 
 ## Структура проекту
 
 ```
-lesson-7/
+lesson-8-9/
 ├── main.tf                    # Головний Terraform файл
 ├── backend.tf                 # S3 backend конфігурація
 ├── outputs.tf                 # Terraform outputs
@@ -30,7 +32,9 @@ lesson-7/
 │   ├── s3-backend/            # S3 + DynamoDB для Terraform state
 │   ├── vpc/                   # VPC інфраструктура
 │   ├── ecr/                   # Elastic Container Registry
-│   └── eks/                   # EKS кластер та node groups
+│   ├── eks/                   # EKS кластер та node groups
+│   ├── jenkins/               # Jenkins CI/CD через Helm
+│   └── argo-cd/               # ArgoCD GitOps через Helm
 └── charts/django-app/         # Helm chart
     ├── Chart.yaml             # Метадані chart
     ├── values.yaml            # Конфігурація
@@ -53,7 +57,16 @@ lesson-7/
 - kubectl встановлений
 - Helm >= 3.0
 
-### Крок 1: Розгортання інфраструктури
+### Крок 1: Налаштування GitHub PAT
+
+Для забезпечення безпеки GitHub Personal Access Token передається через змінні середовища:
+
+```bash
+# Експорт GitHub PAT для Terraform
+export TF_VAR_github_token="ghp_your_PAT_token_here"
+```
+
+### Крок 2: Розгортання інфраструктури
 
 ```bash
 # Ініціалізація Terraform (з локальним backend)
@@ -66,7 +79,7 @@ terraform plan
 terraform apply
 ```
 
-### Крок 2: Міграція на remote backend (S3)
+### Крок 3: Міграція на remote backend (S3)
 
 **Важливо**: Після створення S3 bucket та DynamoDB потрібно мігрувати state.
 
@@ -80,47 +93,69 @@ terraform init
 # Підтверджуємо міграцію: yes
 ```
 
-### Крок 3: Налаштування kubectl
+### Крок 4: Налаштування kubectl та Jenkins secret
 
 ```bash
 # Підключення до EKS кластера
-aws eks update-kubeconfig --region us-west-2 --name lesson-7-eks-cluster
+aws eks update-kubeconfig --region us-west-2 --name lesson-8-9-eks-cluster
 
 # Перевірка підключення
 kubectl get nodes
+
+# Створення namespace для Jenkins (якщо ще не створено)
+kubectl create namespace jenkins
+
+# Створення secret з GitHub token для Jenkins
+kubectl create secret generic jenkins-github-token \
+  --from-literal=GITHUB_TOKEN="ghp_your_PAT_token_here" \
+  -n jenkins
 ```
 
-### Крок 4: Завантаження Docker образу
+### Крок 5: Перевірка Jenkins
 
 ```bash
-# Побудова та завантаження Django образу в ECR
-./build-and-push-image.sh
+# Отримання Jenkins LoadBalancer URL
+kubectl get service -n jenkins
+
+# Логін: admin / admin123
+# Перевірка seed-job та django-ci-cd pipeline
 ```
 
-### Крок 5: Розгортання застосунку
+### Крок 6: Перевірка ArgoCD
 
 ```bash
-# Перевірка Helm chart
-helm lint charts/django-app
+# Отримання ArgoCD LoadBalancer URL
+kubectl get service -n argocd
 
-# Розгортання застосунку
-helm install django-app charts/django-app
+# Отримання admin паролю
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
-# Перевірка статусу
-helm status django-app
-kubectl get all -l app.kubernetes.io/name=django-app
+# Логін: admin / <отриманий пароль>
+# Перевірка django-app application
 ```
 
-## Доступ до застосунку
+## CI/CD Процес
 
-Після успішного розгортання застосунок буде доступний через LoadBalancer:
+### Як працює автоматизація:
+
+1. **Пуш коду** → GitHub репозиторій (гілка lesson-8-9)
+2. **Jenkins Pipeline** → автоматично запускається через SCM polling
+3. **Збірка образу** → Kaniko збирає Docker образ
+4. **Пуш в ECR** → образ завантажується в Amazon ECR
+5. **Оновлення chart** → Jenkins оновлює тег в values.yaml
+6. **ArgoCD sync** → ArgoCD підхоплює зміни та деплоїть
+
+### Доступ до застосунку:
 
 ```bash
-# Отримання зовнішньої IP адреси
+# Django застосунок (через ArgoCD)
 kubectl get service django-app
 
-# Доступ до Django
-# http://<EXTERNAL-IP>
+# Jenkins UI
+kubectl get service -n jenkins
+
+# ArgoCD UI  
+kubectl get service -n argocd
 ```
 
 ## Корисні команди
@@ -224,8 +259,8 @@ aws elbv2 describe-load-balancers --region us-west-2
 terraform destroy
 
 # 4. Очищення залишків (якщо потрібно)
-aws ecr batch-delete-image --repository-name lesson-7-django-app --image-ids imageTag=latest --region us-west-2
-aws ecr delete-repository --repository-name lesson-7-django-app --force --region us-west-2
+aws ecr batch-delete-image --repository-name lesson-8-9-django-app --image-ids imageTag=latest --region us-west-2
+aws ecr delete-repository --repository-name lesson-8-9-django-app --force --region us-west-2
 ```
 
 ### Верифікація очищення
@@ -234,7 +269,7 @@ aws ecr delete-repository --repository-name lesson-7-django-app --force --region
 # Перевірка повного видалення
 aws ecr describe-repositories --region us-west-2       # має бути порожньо
 aws eks list-clusters --region us-west-2               # має бути порожньо  
-aws ec2 describe-vpcs --filters "Name=tag:Project,Values=lesson-7" --region us-west-2  # порожньо
+aws ec2 describe-vpcs --filters "Name=tag:Project,Values=lesson-8-9" --region us-west-2  # порожньо
 ```
 
 ## Troubleshooting
