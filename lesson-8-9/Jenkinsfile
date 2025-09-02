@@ -18,7 +18,7 @@ spec:
     args:
     - 99d
   - name: git
-    image: alpine/git
+    image: alpine/git:latest
     command:
     - sleep
     args:
@@ -40,13 +40,12 @@ spec:
             steps {
                 container('kaniko') {
                     sh '''
-                    /kaniko/executor \\
-                        --context `pwd`/lesson-8-9 \\
-                        --dockerfile `pwd`/lesson-8-9/Dockerfile \\
-                        --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \\
-                        --cache=true \\
-                        --insecure \\
-                        --skip-tls-verify
+                    /kaniko/executor \
+                        --context ./lesson-8-9 \
+                        --dockerfile ./lesson-8-9/Dockerfile \
+                        --destination=${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+                        --cache=false \
+                        --force
                     '''
                 }
             }
@@ -57,21 +56,50 @@ spec:
                 container('git') {
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
                         sh '''
-                        git clone --branch lesson-8-9 https://$GIT_USERNAME:$GIT_PAT@github.com/sergiy-ka/my-microservice-project.git
-                        cd my-microservice-project/lesson-8-9/charts/django-app
+                        # Configure git
+                        git config user.email "${COMMIT_EMAIL}"
+                        git config user.name "${COMMIT_NAME}"
 
-                        # Update the image tag in values.yaml
-                        sed -i "s/tag: .*/tag: $IMAGE_TAG/" values.yaml
+                        # Navigate to chart directory
+                        cd lesson-8-9/charts/django-app
 
-                        git config user.email "$COMMIT_EMAIL"
-                        git config user.name "$COMMIT_NAME"
+                        echo "Current values.yaml tag:"
+                        grep "tag:" values.yaml
+
+                        # Update the image tag
+                        sed -i "s/tag: .*/tag: \\"${IMAGE_TAG}\\"/" values.yaml
+
+                        echo "Updated values.yaml tag:"
+                        grep "tag:" values.yaml
+
+                        # Add and commit changes
                         git add values.yaml
-                        git commit -m "Update image tag to $IMAGE_TAG"
-                        git push origin lesson-8-9
+
+                        # Check if there are changes to commit
+                        if git diff --staged --quiet; then
+                            echo "No changes to commit"
+                        else
+                            git commit -m "Update image tag to ${IMAGE_TAG} [skip ci]"
+
+                            # Push using PAT token in URL
+                            git push https://${GIT_USERNAME}:${GIT_PAT}@github.com/sergiy-ka/my-microservice-project.git HEAD:lesson-8-9
+                        fi
                         '''
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completed"
+        }
+        success {
+            echo "Pipeline succeeded! Image ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} built and chart updated"
+        }
+        failure {
+            echo "Pipeline failed"
         }
     }
 }
