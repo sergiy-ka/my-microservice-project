@@ -134,6 +134,23 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 # Перевірка django-app application
 ```
 
+## Процеси збірки образів
+
+### Автоматизований (Production) - Jenkins Pipeline
+**Коли**: При кожному push в гілку lesson-8-9
+**Теги**: Версіоновані `v1.0.X` (X = BUILD_NUMBER)
+**Процес**: Kaniko збірка → ECR push → Chart update → ArgoCD sync
+
+### Ручний (Development) - build-and-push-image.sh
+**Коли**: Локальне тестування образу розробником
+**Теги**: `manual-YYYYMMDD-HHMMSS` 
+**Використання**:
+```bash
+# Ручна збірка та завантаження образу
+./build-and-push-image.sh
+```
+**Примітка**: Образи з тегом `manual-*` не використовуються ArgoCD
+
 ## CI/CD Процес
 
 ### Як працює автоматизація:
@@ -144,6 +161,41 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 4. **Пуш в ECR** → образ завантажується в Amazon ECR
 5. **Оновлення chart** → Jenkins оновлює тег в values.yaml
 6. **ArgoCD sync** → ArgoCD підхоплює зміни та деплоїть
+
+### Розгортання Django застосунку:
+
+**Автоматичне розгортання (через ArgoCD):**
+- ArgoCD стежить за `lesson-8-9/charts/django-app/` в Git репозиторії
+- При зміні `values.yaml` (нового тегу) ArgoCD автоматично синхронізує
+- Створюються: Deployment, Service (LoadBalancer), ConfigMap, HPA, PostgreSQL
+
+**Перевірка роботи Django:**
+```bash
+# Статус ArgoCD application
+kubectl get applications -n argocd
+
+# Отримання зовнішньої IP адреси Django
+kubectl get service django-app
+
+# Доступ до Django застосунку
+# http://<EXTERNAL-IP>
+
+# Перевірка статусу подів
+kubectl get pods -l app.kubernetes.io/name=django-app
+
+# Детальна діагностика (якщо потрібно)
+kubectl describe deployment django-app
+kubectl logs -l app.kubernetes.io/name=django-app
+```
+
+**Ручне розгортання (для тестування):**
+```bash
+# Якщо потрібно розгорнути django-app поза ArgoCD
+helm install django-app charts/django-app
+
+# Або оновити вручну
+helm upgrade django-app charts/django-app
+```
 
 ### Доступ до застосунку:
 

@@ -94,7 +94,7 @@ controller:
               }
             }
 
-  # Add environment variable from Kubernetes secret
+  # Додавання змінної середовища з Kubernetes secret
   containerEnv:
     - name: GITHUB_TOKEN
       valueFrom:

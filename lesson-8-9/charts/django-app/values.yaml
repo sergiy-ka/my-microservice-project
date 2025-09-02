@@ -1,4 +1,4 @@
-# Default values for django-app
+# Значення за замовчуванням для django-app
 
 replicaCount: 2
 
@@ -32,7 +32,7 @@ tolerations: []
 
 affinity: {}
 
-# ConfigMap values
+# Значення ConfigMap
 config:
   POSTGRES_HOST: "db"
   POSTGRES_PORT: "5432"
