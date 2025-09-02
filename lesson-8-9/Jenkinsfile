@@ -53,12 +53,21 @@ spec:
 
         stage('Update Chart Tag in Git') {
             steps {
-                container('git') {
+                script {
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
                         sh '''
                         # Configure git
                         git config user.email "${COMMIT_EMAIL}"
                         git config user.name "${COMMIT_NAME}"
+
+                        echo "Current working directory:"
+                        pwd
+
+                        echo "Git status:"
+                        git status
+
+                        echo "Current branch:"
+                        git branch
 
                         # Navigate to chart directory
                         cd lesson-8-9/charts/django-app
@@ -72,8 +81,11 @@ spec:
                         echo "Updated values.yaml tag:"
                         grep "tag:" values.yaml
 
+                        # Go back to root directory for git operations
+                        cd ../../..
+
                         # Add and commit changes
-                        git add values.yaml
+                        git add lesson-8-9/charts/django-app/values.yaml
 
                         # Check if there are changes to commit
                         if git diff --staged --quiet; then
