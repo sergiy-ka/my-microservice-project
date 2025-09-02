@@ -1,10 +1,4 @@
 controller:
-  extraEnv:
-    GITHUB_TOKEN:
-      valueFrom:
-        secretKeyRef:
-          name: jenkins-github-token
-          key: GITHUB_TOKEN
   admin:
     username: admin
     password: admin123
@@ -99,3 +93,11 @@ controller:
                 scm('H/5 * * * *')
               }
             }
+
+  # Add environment variable from Kubernetes secret
+  containerEnv:
+    - name: GITHUB_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-github-token
+          key: GITHUB_TOKEN
