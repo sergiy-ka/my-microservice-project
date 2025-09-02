@@ -66,7 +66,7 @@ spec:
                         echo "Current branch:"
                         git branch
 
-                        # Switch to lesson-8-9 branch (create if doesn't exist locally)
+                        # Switch to lesson-8-9 branch
                         git checkout lesson-8-9 || git checkout -b lesson-8-9 origin/lesson-8-9
 
                         echo "After checkout:"
@@ -96,11 +96,15 @@ spec:
                         else
                             git commit -m "Update image tag to ${IMAGE_TAG} [skip ci]"
 
-                            # Configure remote with authentication token
-                            git remote set-url origin https://${GIT_USERNAME}:${GIT_PAT}@github.com/sergiy-ka/my-microservice-project.git
+                            # Create git credentials file
+                            echo "https://${GIT_USERNAME}:${GIT_PAT}@github.com" > /tmp/git-credentials
+                            git config credential.helper "store --file=/tmp/git-credentials"
 
                             # Push to lesson-8-9 branch
                             git push origin lesson-8-9
+
+                            # Clean up credentials
+                            rm -f /tmp/git-credentials
                         fi
                         '''
                     }
