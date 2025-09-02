@@ -63,10 +63,13 @@ spec:
                         echo "Current working directory:"
                         pwd
 
-                        echo "Git status:"
-                        git status
-
                         echo "Current branch:"
+                        git branch
+
+                        # Switch to lesson-8-9 branch (create if doesn't exist locally)
+                        git checkout lesson-8-9 || git checkout -b lesson-8-9 origin/lesson-8-9
+
+                        echo "After checkout:"
                         git branch
 
                         # Navigate to chart directory
@@ -93,8 +96,11 @@ spec:
                         else
                             git commit -m "Update image tag to ${IMAGE_TAG} [skip ci]"
 
-                            # Push using PAT token in URL
-                            git push https://${GIT_USERNAME}:${GIT_PAT}@github.com/sergiy-ka/my-microservice-project.git HEAD:lesson-8-9
+                            # Configure remote with authentication token
+                            git remote set-url origin https://${GIT_USERNAME}:${GIT_PAT}@github.com/sergiy-ka/my-microservice-project.git
+
+                            # Push to lesson-8-9 branch
+                            git push origin lesson-8-9
                         fi
                         '''
                     }
