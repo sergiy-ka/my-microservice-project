@@ -18,7 +18,7 @@ spec:
     args:
     - 99d
   - name: git
-    image: alpine/git:latest
+    image: alpine/git
     command:
     - sleep
     args:
@@ -40,12 +40,13 @@ spec:
             steps {
                 container('kaniko') {
                     sh '''
-                    /kaniko/executor \
-                        --context ./lesson-8-9 \
-                        --dockerfile ./lesson-8-9/Dockerfile \
-                        --destination=${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-                        --cache=false \
-                        --force
+                    /kaniko/executor \\
+                        --context `pwd`/lesson-8-9 \\
+                        --dockerfile `pwd`/lesson-8-9/Dockerfile \\
+                        --destination=$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \\
+                        --cache=true \\
+                        --insecure \\
+                        --skip-tls-verify
                     '''
                 }
             }
@@ -53,75 +54,24 @@ spec:
 
         stage('Update Chart Tag in Git') {
             steps {
-                script {
+                container('git') {
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
                         sh '''
-                        # Configure git
-                        git config user.email "${COMMIT_EMAIL}"
-                        git config user.name "${COMMIT_NAME}"
+                        git clone --branch lesson-8-9 https://$GIT_USERNAME:$GIT_PAT@github.com/sergiy-ka/my-microservice-project.git
+                        cd my-microservice-project/lesson-8-9/charts/django-app
 
-                        echo "Current working directory:"
-                        pwd
+                        # Update the image tag in values.yaml
+                        sed -i "s/tag: .*/tag: $IMAGE_TAG/" values.yaml
 
-                        echo "Current branch:"
-                        git branch
-
-                        # Switch to lesson-8-9 branch
-                        git checkout lesson-8-9 || git checkout -b lesson-8-9 origin/lesson-8-9
-
-                        echo "After checkout:"
-                        git branch
-
-                        # Navigate to chart directory
-                        cd lesson-8-9/charts/django-app
-
-                        echo "Current values.yaml tag:"
-                        grep "tag:" values.yaml
-
-                        # Update the image tag
-                        sed -i "s/tag: .*/tag: \\"${IMAGE_TAG}\\"/" values.yaml
-
-                        echo "Updated values.yaml tag:"
-                        grep "tag:" values.yaml
-
-                        # Go back to root directory for git operations
-                        cd ../../..
-
-                        # Add and commit changes
-                        git add lesson-8-9/charts/django-app/values.yaml
-
-                        # Check if there are changes to commit
-                        if git diff --staged --quiet; then
-                            echo "No changes to commit"
-                        else
-                            git commit -m "Update image tag to ${IMAGE_TAG} [skip ci]"
-
-                            # Create git credentials file
-                            echo "https://${GIT_USERNAME}:${GIT_PAT}@github.com" > /tmp/git-credentials
-                            git config credential.helper "store --file=/tmp/git-credentials"
-
-                            # Push to lesson-8-9 branch
-                            git push origin lesson-8-9
-
-                            # Clean up credentials
-                            rm -f /tmp/git-credentials
-                        fi
+                        git config user.email "$COMMIT_EMAIL"
+                        git config user.name "$COMMIT_NAME"
+                        git add values.yaml
+                        git commit -m "Update image tag to $IMAGE_TAG"
+                        git push origin lesson-8-9
                         '''
                     }
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            echo "Pipeline completed"
-        }
-        success {
-            echo "Pipeline succeeded! Image ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} built and chart updated"
-        }
-        failure {
-            echo "Pipeline failed"
         }
     }
 }
