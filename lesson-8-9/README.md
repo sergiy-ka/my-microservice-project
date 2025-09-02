@@ -66,43 +66,40 @@ lesson-8-9/
 export TF_VAR_github_token="ghp_your_PAT_token_here"
 ```
 
-### Крок 2: Розгортання інфраструктури
+### Крок 2: Розгортання базової інфраструктури (Target Apply)
+
+**Важливо**: Через циклічну залежність між EKS та Helm провайдерами використовуємо поетапне розгортання.
 
 ```bash
 # Ініціалізація Terraform (з локальним backend)
 terraform init
 
-# Перевірка плану
-terraform plan
+# Створення тільки базової інфраструктури (target apply)
+terraform apply -target=module.vpc -target=module.s3_backend -target=module.ecr -target=module.eks
 
-# Розгортання інфраструктури
-terraform apply
+# Підтвердити: yes
+# Очікування: VPC, S3, ECR, EKS кластер створені
 ```
 
 ### Крок 3: Міграція на remote backend (S3)
 
-**Важливо**: Після створення S3 bucket та DynamoDB потрібно мігрувати state.
-
 ```bash
-# Розкоментовуємо backend.tf
-sed -i 's/^#//g' backend.tf
-
-# Переініціалізуємо з remote backend
+# Backend.tf вже розкоментований, переініціалізуємо з S3 backend
 terraform init
 
-# Підтверджуємо міграцію: yes
+# Підтверджуємо міграцію state з локального в S3: yes
 ```
 
 ### Крок 4: Налаштування kubectl та Jenkins secret
 
 ```bash
-# Підключення до EKS кластера
+# Підключення до створеного EKS кластера
 aws eks update-kubeconfig --region us-west-2 --name lesson-8-9-eks-cluster
 
-# Перевірка підключення
+# Перевірка підключення до кластера
 kubectl get nodes
 
-# Створення namespace для Jenkins (якщо ще не створено)
+# Створення namespace для Jenkins 
 kubectl create namespace jenkins
 
 # Створення secret з GitHub token для Jenkins
@@ -111,7 +108,17 @@ kubectl create secret generic jenkins-github-token \
   -n jenkins
 ```
 
-### Крок 5: Перевірка Jenkins
+### Крок 5: Розгортання Jenkins та ArgoCD (Повний Apply)
+
+```bash
+# Тепер можемо застосувати повну конфігурацію
+terraform apply
+
+# Підтвердити: yes
+# Очікування: Jenkins та ArgoCD успішно розгорнуті
+```
+
+### Крок 6: Перевірка Jenkins
 
 ```bash
 # Отримання Jenkins LoadBalancer URL
@@ -121,7 +128,7 @@ kubectl get service -n jenkins
 # Перевірка seed-job та django-ci-cd pipeline
 ```
 
-### Крок 6: Перевірка ArgoCD
+### Крок 7: Перевірка ArgoCD
 
 ```bash
 # Отримання ArgoCD LoadBalancer URL
