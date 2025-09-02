@@ -1,0 +1,43 @@
+# Default values for django-app
+
+replicaCount: 2
+
+image:
+  repository: 692741817540.dkr.ecr.us-west-2.amazonaws.com/lesson-8-9-django-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: false
+
+resources: {}
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# ConfigMap values
+config:
+  POSTGRES_HOST: "db"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "myproject_db"
+  POSTGRES_USER: "myproject_user"
+  POSTGRES_PASSWORD: "secret_password"
+  DEBUG: "True"
+  ALLOWED_HOSTS: "*"
