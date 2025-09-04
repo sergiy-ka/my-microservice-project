@@ -1,4 +1,4 @@
-# Create IAM OIDC Provider for IRSA
+# Створення IAM OIDC Provider для IRSA
 resource "aws_iam_openid_connect_provider" "oidc" {
   url = aws_eks_cluster.main.identity[0].oidc[0].issuer
 
@@ -7,7 +7,7 @@ resource "aws_iam_openid_connect_provider" "oidc" {
   thumbprint_list = ["9e99a48a9960b14926bb7f3b02e22da2ecd6c6f9"]
 }
 
-# IAM role for EBS CSI Driver
+# IAM роль для EBS CSI Driver
 resource "aws_iam_role" "ebs_csi_irsa_role" {
   name = "${var.cluster_name}-ebs-csi-irsa-role"
 
@@ -28,13 +28,13 @@ resource "aws_iam_role" "ebs_csi_irsa_role" {
   })
 }
 
-# Attach the official policy to this role
+# Прикріплення офіційної політики до ролі
 resource "aws_iam_role_policy_attachment" "ebs_irsa_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.ebs_csi_irsa_role.name
 }
 
-# EKS Addon with bound IRSA IAM role
+# EKS Addon з прив'язаною IRSA IAM роллю
 resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name             = aws_eks_cluster.main.name
   addon_name               = "aws-ebs-csi-driver"

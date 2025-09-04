@@ -1,4 +1,4 @@
-# Helm release for Argo CD
+# Helm реліз для Argo CD
 resource "helm_release" "argo_cd" {
   name       = var.name
   namespace  = var.namespace
@@ -13,7 +13,7 @@ resource "helm_release" "argo_cd" {
   create_namespace = true
 }
 
-# Helm release for Argo CD Applications
+# Helm реліз для Argo CD застосунків
 resource "helm_release" "argo_apps" {
   name      = "${var.name}-apps"
   chart     = "${path.module}/charts"

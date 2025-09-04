@@ -1,4 +1,4 @@
-# Create storage class for Jenkins
+# Створення storage class для Jenkins
 resource "kubernetes_storage_class_v1" "ebs_sc" {
   metadata {
     name = "ebs-sc"
@@ -14,7 +14,7 @@ resource "kubernetes_storage_class_v1" "ebs_sc" {
   }
 }
 
-# IAM role for Jenkins with ECR access
+# IAM роль для Jenkins з доступом до ECR
 resource "aws_iam_role" "jenkins_kaniko_role" {
   name = "${var.cluster_name}-jenkins-kaniko-role"
 
@@ -37,7 +37,7 @@ resource "aws_iam_role" "jenkins_kaniko_role" {
   })
 }
 
-# IAM policy for ECR access
+# IAM політика для доступу до ECR
 resource "aws_iam_role_policy" "jenkins_ecr_policy" {
   name = "${var.cluster_name}-jenkins-kaniko-ecr-policy"
   role = aws_iam_role.jenkins_kaniko_role.id
@@ -62,7 +62,7 @@ resource "aws_iam_role_policy" "jenkins_ecr_policy" {
   })
 }
 
-# Kubernetes service account with IRSA
+# Kubernetes service account з IRSA
 resource "kubernetes_service_account" "jenkins_sa" {
   metadata {
     name      = "jenkins-sa"
@@ -74,7 +74,7 @@ resource "kubernetes_service_account" "jenkins_sa" {
   depends_on = [helm_release.jenkins]
 }
 
-# Helm release for Jenkins
+# Helm реліз для Jenkins
 resource "helm_release" "jenkins" {
   name       = "jenkins"
   namespace  = "jenkins"

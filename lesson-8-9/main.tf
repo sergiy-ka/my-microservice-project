@@ -29,7 +29,7 @@ provider "aws" {
   }
 }
 
-# EKS cluster data source for Helm and Kubernetes providers
+# EKS кластер data source для Helm та Kubernetes провайдерів
 data "aws_eks_cluster" "eks" {
   name = module.eks.cluster_name
 }
@@ -52,7 +52,7 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.eks.token
 }
 
-# Variables
+# Змінні
 variable "aws_region" {
   description = "AWS region"
   type        = string
