@@ -44,13 +44,24 @@ terraform destroy -auto-approve
 # Крок 5: Очищення ECR (якщо не видалився)
 echo "5. Перевірка та очищення ECR..."
 if aws ecr describe-repositories --repository-names $REPOSITORY_NAME --region $REGION >/dev/null 2>&1; then
-    echo "Видалення образів з ECR..."
-    aws ecr batch-delete-image --repository-name $REPOSITORY_NAME --image-ids imageTag=latest --region $REGION >/dev/null 2>&1
-    echo "Видалення ECR репозиторію..."
+    echo "Видалення всіх образів з ECR..."
+    # Видалити всі образи (не тільки latest)
     aws ecr delete-repository --repository-name $REPOSITORY_NAME --force --region $REGION >/dev/null 2>&1
-    echo "ECR очищено"
+    echo "ECR репозиторій повністю видалений"
 else
     echo "ECR вже видалений"
+fi
+
+# Крок 5.1: Очищення S3 bucket для Terraform state
+echo "5.1. Очищення S3 bucket..."
+BUCKET_NAME="terraform-state-bucket-lesson8-9-sergiy-2025"
+if aws s3api head-bucket --bucket $BUCKET_NAME --region $REGION >/dev/null 2>&1; then
+    echo "Видалення об'єктів з S3 bucket..."
+    aws s3 rm s3://$BUCKET_NAME --recursive >/dev/null 2>&1
+    aws s3api delete-bucket --bucket $BUCKET_NAME --region $REGION >/dev/null 2>&1
+    echo "S3 bucket очищено"
+else
+    echo "S3 bucket вже видалений"
 fi
 
 # Крок 6: Перевірка очищення
