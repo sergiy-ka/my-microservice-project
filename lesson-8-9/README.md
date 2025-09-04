@@ -84,7 +84,7 @@ terraform apply -target=module.vpc -target=module.s3_backend -target=module.ecr 
 ### Крок 3: Міграція на remote backend (S3)
 
 ```bash
-# Backend.tf вже розкоментований, переініціалізуємо з S3 backend
+# Розкоментуємо Backend.tf та переініціалізуємо з S3 backend
 terraform init
 
 # Підтверджуємо міграцію state з локального в S3: yes
@@ -125,6 +125,7 @@ terraform apply
 kubectl get service -n jenkins
 
 # Логін: admin / admin123
+# Підтвердження скрипта в налаштуваннях Jenkins (In-process Script Approval)
 # Перевірка seed-job та django-ci-cd pipeline
 ```
 
