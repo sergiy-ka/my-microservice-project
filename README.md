@@ -17,3 +17,6 @@
 
 ### [Урок 8-9: Jenkins + ArgoCD CI/CD Pipeline](./lesson-8-9/README.md)
 Створення повного CI/CD процесу для Django застосунку з використанням Jenkins, ArgoCD, Terraform, Docker, Kubernetes (EKS) та Helm
+
+### [Урок 10: Jenkins + ArgoCD CI/CD Pipeline з RDS модулем](./lesson-10/README.md)
+Розширена версія CI/CD процесу з додаванням універсального RDS/Aurora модуля для баз даних. Включає створення гнучкого Terraform-модуля, який може розгортати як звичайну RDS instance, так і Aurora кластер залежно від конфігурації.
