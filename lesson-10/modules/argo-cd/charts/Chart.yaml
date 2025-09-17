@@ -1,0 +1,14 @@
+apiVersion: v2
+name: argo-apps
+version: 0.1.0
+description: Deploy Argo CD Applications and Repositories
+type: application
+
+keywords:
+  - argocd
+  - applications
+  - gitops
+
+maintainers:
+  - name: Sergio
+    email: s.stenv@slmails.com
