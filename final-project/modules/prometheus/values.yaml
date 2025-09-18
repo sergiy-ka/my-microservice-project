@@ -82,10 +82,6 @@ kubeStateMetrics:
 # Server configuration for scraping
 serverFiles:
   prometheus.yml:
-    global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
-
     rule_files:
       # Add custom alert rules here if needed
 

@@ -296,6 +296,8 @@ module "grafana" {
     "grafana-worldmap-panel"
   ]
 
+  depends_on = [module.eks, module.prometheus]
+
   tags = {
     Project     = "final-project"
     Environment = var.environment
