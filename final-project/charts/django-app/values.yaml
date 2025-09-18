@@ -5,7 +5,7 @@ replicaCount: 2
 image:
   repository: 692741817540.dkr.ecr.us-west-2.amazonaws.com/final-project-django-app
   pullPolicy: IfNotPresent
-  tag: v1.0.4
+  tag: v1.0.5
 
 nameOverride: ""
 fullnameOverride: ""
