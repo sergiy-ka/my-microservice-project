@@ -8,33 +8,61 @@ resource "helm_release" "grafana" {
 
   create_namespace = false # Namespace should be created by Prometheus module
 
-  # Use values file for complex configuration
-  values = [
-    templatefile("${path.module}/values.yaml", {
-      admin_password  = var.admin_password
-      prometheus_url  = var.prometheus_url
-      storage_size    = var.storage_size
-      plugins_list    = join(",", var.grafana_plugins)
-      enable_persist  = var.enable_persistence
-      cluster_name    = var.cluster_name
-    })
-  ]
+  # Basic configuration via set parameters (simpler than values file)
+  set {
+    name  = "adminUser"
+    value = "admin"
+  }
 
-  # Set admin password
   set_sensitive {
     name  = "adminPassword"
     value = var.admin_password
   }
 
+  set {
+    name  = "persistence.enabled"
+    value = var.enable_persistence
+  }
+
+  set {
+    name  = "persistence.size"
+    value = var.storage_size
+  }
+
+  set {
+    name  = "persistence.storageClassName"
+    value = "gp2"
+  }
+
   # Configure Prometheus data source
   set {
-    name  = "datasources.datasources.yaml.datasources[0].url"
+    name  = "datasources.datasources\\.yaml.apiVersion"
+    value = "1"
+  }
+
+  set {
+    name  = "datasources.datasources\\.yaml.datasources[0].name"
+    value = "Prometheus"
+  }
+
+  set {
+    name  = "datasources.datasources\\.yaml.datasources[0].type"
+    value = "prometheus"
+  }
+
+  set {
+    name  = "datasources.datasources\\.yaml.datasources[0].url"
     value = var.prometheus_url
   }
 
   set {
-    name  = "datasources.datasources.yaml.datasources[0].name"
-    value = "Prometheus"
+    name  = "datasources.datasources\\.yaml.datasources[0].access"
+    value = "proxy"
+  }
+
+  set {
+    name  = "datasources.datasources\\.yaml.datasources[0].isDefault"
+    value = "true"
   }
 
   # Wait for deployment to be ready
