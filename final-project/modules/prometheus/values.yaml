@@ -1,13 +1,13 @@
-# Prometheus Server Configuration
+# Конфігурація Prometheus Server
 server:
-  # Enable persistent storage
+  # Увімкнути постійне зберігання
   persistentVolume:
     enabled: true
     storageClass: "gp2"
     accessModes:
       - ReadWriteOnce
 
-  # Resource limits
+  # Обмеження ресурсів
   resources:
     limits:
       cpu: 500m
@@ -16,23 +16,23 @@ server:
       cpu: 100m
       memory: 128Mi
 
-  # Security context
+  # Контекст безпеки
   securityContext:
     runAsUser: 65534
     runAsNonRoot: true
     runAsGroup: 65534
     fsGroup: 65534
 
-  # Service configuration
+  # Конфігурація сервісу
   service:
     type: ClusterIP
     port: 80
 
-  # Ingress disabled (using port-forward)
+  # Ingress відключено (використовуємо port-forward)
   ingress:
     enabled: false
 
-# Alertmanager Configuration
+# Конфігурація Alertmanager
 alertmanager:
   enabled: true
 
@@ -52,11 +52,11 @@ alertmanager:
   service:
     type: ClusterIP
 
-# Node Exporter Configuration
+# Конфігурація Node Exporter
 nodeExporter:
   enabled: true
 
-  # Run on all nodes including master
+  # Запускати на всіх вузлах включаючи master
   tolerations:
     - operator: Exists
       effect: NoSchedule
@@ -71,7 +71,7 @@ nodeExporter:
       cpu: 10m
       memory: 10Mi
 
-# Pushgateway Configuration
+# Конфігурація Pushgateway
 pushgateway:
   enabled: false
 
@@ -79,11 +79,11 @@ pushgateway:
 kubeStateMetrics:
   enabled: true
 
-# Server configuration for scraping
+# Конфігурація сервера для збору метрик
 serverFiles:
   prometheus.yml:
     rule_files:
-      # Add custom alert rules here if needed
+      # Додати користувацькі правила сповіщень за потреби
 
     scrape_configs:
       # Kubernetes API server

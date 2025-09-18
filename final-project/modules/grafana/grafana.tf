@@ -6,9 +6,9 @@ resource "helm_release" "grafana" {
   version    = var.chart_version
   namespace  = var.namespace
 
-  create_namespace = false # Namespace should be created by Prometheus module
+  create_namespace = false # Namespace має бути створений модулем Prometheus
 
-  # Use values file for complex configuration with proper templating
+  # Використовуємо файл values для конфігурації
   values = [
     templatefile("${path.module}/values.yaml", {
       admin_password  = var.admin_password
@@ -20,13 +20,13 @@ resource "helm_release" "grafana" {
     })
   ]
 
-  # Set admin password via set_sensitive to create proper secret
+  # Встановлюємо пароль адміністратора через set_sensitive
   set_sensitive {
     name  = "adminPassword"
     value = var.admin_password
   }
 
-  # Wait for deployment to be ready
+  # Очікуємо готовності розгортання
   wait          = true
   timeout       = 600
   wait_for_jobs = false
@@ -34,7 +34,7 @@ resource "helm_release" "grafana" {
   depends_on = []
 }
 
-# ConfigMap for custom dashboards
+# ConfigMap для користувацьких дашбордів
 resource "kubernetes_config_map" "grafana_dashboards" {
   metadata {
     name      = "grafana-custom-dashboards"

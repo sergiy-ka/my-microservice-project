@@ -1,11 +1,11 @@
-# Grafana Configuration
+# Конфігурація Grafana
 replicas: 1
 
-# Admin user configuration
+# Конфігурація користувача адміністратора
 adminUser: admin
 adminPassword: ${admin_password}
 
-# Persistence configuration
+# Конфігурація постійного сховища
 persistence:
   enabled: ${enable_persist}
   storageClassName: "gp2"
@@ -13,7 +13,7 @@ persistence:
   accessModes:
     - ReadWriteOnce
 
-# Resource limits
+# Обмеження ресурсів
 resources:
   limits:
     cpu: 200m
@@ -22,29 +22,29 @@ resources:
     cpu: 100m
     memory: 128Mi
 
-# Service configuration
+# Конфігурація сервісу
 service:
   type: ClusterIP
   port: 80
 
-# Ingress disabled (using port-forward)
+# Ingress вимкнено (використовуємо port-forward)
 ingress:
   enabled: false
 
-# Security context
+# Контекст безпеки
 securityContext:
   runAsUser: 472
   runAsGroup: 472
   fsGroup: 472
 
-# Environment variables
+# Змінні середовища
 env:
   GF_USERS_ALLOW_SIGN_UP: "false"
   GF_USERS_AUTO_ASSIGN_ORG: "true"
   GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
   GF_INSTALL_PLUGINS: "${plugins_list}"
 
-# Data sources configuration
+# Конфігурація джерел даних
 datasources:
   datasources.yaml:
     apiVersion: 1
@@ -57,7 +57,7 @@ datasources:
         jsonData:
           timeInterval: "30s"
 
-# Dashboard providers
+# Провайдери дашбордів
 dashboardProviders:
   dashboardproviders.yaml:
     apiVersion: 1
@@ -81,55 +81,55 @@ dashboardProviders:
         options:
           path: /var/lib/grafana/dashboards/kubernetes
 
-# Dashboard configuration
+# Конфігурація дашбордів
 dashboards:
   default:
-    # Node Exporter Full dashboard
+    # Повний дашборд Node Exporter
     node-exporter:
       gnetId: 1860
       revision: 31
       datasource: Prometheus
 
-    # Kubernetes cluster monitoring
+    # Моніторинг Kubernetes кластера
     kubernetes-cluster:
       gnetId: 315
       revision: 3
       datasource: Prometheus
 
   kubernetes:
-    # Kubernetes deployment metrics
+    # Метрики розгортання Kubernetes
     kubernetes-deployments:
       gnetId: 8588
       revision: 1
       datasource: Prometheus
 
-    # Pod monitoring
+    # Моніторинг Pod'ів
     kubernetes-pods:
       gnetId: 6417
       revision: 1
       datasource: Prometheus
 
-# RBAC configuration
+# Конфігурація RBAC
 rbac:
   create: true
   pspEnabled: false
 
-# Service account
+# Сервісний акаунт
 serviceAccount:
   create: true
   name: grafana
   annotations: {}
 
-# Node selector
+# Селектор вузлів
 nodeSelector: {}
 
-# Tolerations
+# Толерації
 tolerations: []
 
-# Affinity rules
+# Правила спорідненості
 affinity: {}
 
-# Init containers
+# Ініціалізаційні контейнери
 initChownData:
   enabled: true
   image:

@@ -8,12 +8,12 @@ resource "helm_release" "prometheus" {
 
   create_namespace = true
 
-  # Use values file for complex configuration
+  # Використовуємо файл values для складної конфігурації
   values = [
     file("${path.module}/values.yaml")
   ]
 
-  # Override specific values
+  # Перевизначаємо специфічні значення
   set {
     name  = "server.retention"
     value = var.prometheus_retention
@@ -39,13 +39,13 @@ resource "helm_release" "prometheus" {
     value = var.node_exporter_enabled
   }
 
-  # Configure service discovery for Kubernetes
+  # Налаштовуємо service discovery для Kubernetes
   set {
     name  = "server.global.external_labels.cluster"
     value = var.cluster_name
   }
 
-  # Wait for deployment to be ready
+  # Очікуємо готовності розгортання
   wait          = true
   timeout       = 600
   wait_for_jobs = false
@@ -53,7 +53,7 @@ resource "helm_release" "prometheus" {
   depends_on = []
 }
 
-# Create monitoring namespace if it doesn't exist
+# Створити простір імен monitoring, якщо його не існує
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = var.namespace
