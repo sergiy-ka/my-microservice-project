@@ -39,7 +39,6 @@ securityContext:
 
 # Environment variables
 env:
-  GF_SECURITY_ADMIN_PASSWORD: ${admin_password}
   GF_USERS_ALLOW_SIGN_UP: "false"
   GF_USERS_AUTO_ASSIGN_ORG: "true"
   GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"

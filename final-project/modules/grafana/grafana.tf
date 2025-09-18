@@ -20,6 +20,12 @@ resource "helm_release" "grafana" {
     })
   ]
 
+  # Set admin password via set_sensitive to create proper secret
+  set_sensitive {
+    name  = "adminPassword"
+    value = var.admin_password
+  }
+
   # Wait for deployment to be ready
   wait          = true
   timeout       = 600
