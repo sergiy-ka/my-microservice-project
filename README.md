@@ -20,3 +20,7 @@
 
 ### [Урок 10: Jenkins + ArgoCD CI/CD Pipeline з RDS модулем](./lesson-10/README.md)
 Розширена версія CI/CD процесу з додаванням універсального RDS/Aurora модуля для баз даних. Включає створення гнучкого Terraform-модуля, який може розгортати як звичайну RDS instance, так і Aurora кластер залежно від конфігурації.
+
+## Фінальний проект
+
+### [Фінальний проект: DevOps Infrastructure з Prometheus та Grafana](./final-project/README.md)

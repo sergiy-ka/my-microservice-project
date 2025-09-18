@@ -1,0 +1,145 @@
+# Grafana Configuration
+replicas: 1
+
+# Admin user configuration
+adminUser: admin
+adminPassword: ${admin_password}
+
+# Persistence configuration
+persistence:
+  enabled: ${enable_persist}
+  storageClassName: "gp2"
+  size: ${storage_size}
+  accessModes:
+    - ReadWriteOnce
+
+# Resource limits
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Ingress disabled (using port-forward)
+ingress:
+  enabled: false
+
+# Security context
+securityContext:
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+# Environment variables
+env:
+  GF_SECURITY_ADMIN_PASSWORD: ${admin_password}
+  GF_USERS_ALLOW_SIGN_UP: "false"
+  GF_USERS_AUTO_ASSIGN_ORG: "true"
+  GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
+  GF_INSTALL_PLUGINS: "${plugins_list}"
+
+# Data sources configuration
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: ${prometheus_url}
+        access: proxy
+        isDefault: true
+        jsonData:
+          timeInterval: "30s"
+
+# Dashboard providers
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+      - name: 'kubernetes'
+        orgId: 1
+        folder: 'Kubernetes'
+        type: file
+        disableDeletion: false
+        editable: true
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/kubernetes
+
+# Dashboard configuration
+dashboards:
+  default:
+    # Node Exporter Full dashboard
+    node-exporter:
+      gnetId: 1860
+      revision: 31
+      datasource: Prometheus
+
+    # Kubernetes cluster monitoring
+    kubernetes-cluster:
+      gnetId: 315
+      revision: 3
+      datasource: Prometheus
+
+  kubernetes:
+    # Kubernetes deployment metrics
+    kubernetes-deployments:
+      gnetId: 8588
+      revision: 1
+      datasource: Prometheus
+
+    # Pod monitoring
+    kubernetes-pods:
+      gnetId: 6417
+      revision: 1
+      datasource: Prometheus
+
+# RBAC configuration
+rbac:
+  create: true
+  pspEnabled: false
+
+# Service account
+serviceAccount:
+  create: true
+  name: grafana
+  annotations: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Init containers
+initChownData:
+  enabled: true
+  image:
+    repository: busybox
+    tag: "1.31.1"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 16Mi
