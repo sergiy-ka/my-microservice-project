@@ -304,6 +304,4 @@ module "grafana" {
     ManagedBy   = "terraform"
     Component   = "monitoring"
   }
-
-  depends_on = [module.eks, module.prometheus]
 }
