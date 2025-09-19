@@ -1,0 +1,144 @@
+# Конфігурація Grafana
+replicas: 1
+
+# Конфігурація користувача адміністратора
+adminUser: admin
+adminPassword: ${admin_password}
+
+# Конфігурація постійного сховища
+persistence:
+  enabled: ${enable_persist}
+  storageClassName: "gp2"
+  size: ${storage_size}
+  accessModes:
+    - ReadWriteOnce
+
+# Обмеження ресурсів
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Конфігурація сервісу
+service:
+  type: ClusterIP
+  port: 80
+
+# Ingress вимкнено (використовуємо port-forward)
+ingress:
+  enabled: false
+
+# Контекст безпеки
+securityContext:
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+# Змінні середовища
+env:
+  GF_USERS_ALLOW_SIGN_UP: "false"
+  GF_USERS_AUTO_ASSIGN_ORG: "true"
+  GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
+  GF_INSTALL_PLUGINS: "${plugins_list}"
+
+# Конфігурація джерел даних
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: ${prometheus_url}
+        access: proxy
+        isDefault: true
+        jsonData:
+          timeInterval: "30s"
+
+# Провайдери дашбордів
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+      - name: 'kubernetes'
+        orgId: 1
+        folder: 'Kubernetes'
+        type: file
+        disableDeletion: false
+        editable: true
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/kubernetes
+
+# Конфігурація дашбордів
+dashboards:
+  default:
+    # Повний дашборд Node Exporter
+    node-exporter:
+      gnetId: 1860
+      revision: 31
+      datasource: Prometheus
+
+    # Моніторинг Kubernetes кластера
+    kubernetes-cluster:
+      gnetId: 315
+      revision: 3
+      datasource: Prometheus
+
+  kubernetes:
+    # Метрики розгортання Kubernetes
+    kubernetes-deployments:
+      gnetId: 8588
+      revision: 1
+      datasource: Prometheus
+
+    # Моніторинг Pod'ів
+    kubernetes-pods:
+      gnetId: 6417
+      revision: 1
+      datasource: Prometheus
+
+# Конфігурація RBAC
+rbac:
+  create: true
+  pspEnabled: false
+
+# Сервісний акаунт
+serviceAccount:
+  create: true
+  name: grafana
+  annotations: {}
+
+# Селектор вузлів
+nodeSelector: {}
+
+# Толерації
+tolerations: []
+
+# Правила спорідненості
+affinity: {}
+
+# Ініціалізаційні контейнери
+initChownData:
+  enabled: true
+  image:
+    repository: busybox
+    tag: "1.31.1"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 16Mi
